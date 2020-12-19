@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Inertia level designer</title>
+     <link rel="stylesheet" href="site.css"/>
+  </head>
+  <body oncontextmenu="return false;">
+    <h1>Inertia level designer</h1>
+    <!-- All you have to do is include the reload script and have it be on every page of your project -->
+    <script src="/reload/reload.js"></script>
+<div class='image-bar'>
+    <img id="spr_bar" src="/sprites/spr_bar.png">
+    <img id="spr_barh" src="/sprites/spr_barh.png">
+    <img id="spr_boost" src="/sprites/spr_boost.png">
+    <img id="spr_boost_small" src="/sprites/spr_boost_small.png">
+    <img id="spr_goal" src="/sprites/spr_goal.png">
+    <img id="spr_ship" src="/sprites/spr_ship.png">
+    <img id="spr_wall" src="/sprites/spr_wall.png">
+    <img id="spr_target" src="/sprites/spr_target.png">
+</div>
+<div>
+ <span>X</span>
+ <span>\</span>
+ <span>/</span>
+ <span>|</span>
+ <span>I</span>
+ <span>-</span>
+ <span>_</span>
+ <span>%</span>
+ <span>M</span>
+ <span>m</span>
+ <span>W</span>
+ <span>w</span>
+ <span>B</span>
+ <span>b</span>
+ <span>E</span>
+ <span>G</span>
+ <span>V</span>
+ <span>^</span>
+ <span>T</span>
+ <span>&gt;</span>
+ <span>&lt;</span>
+</div>
+    <canvas id="canvas" width="1200" height="800" style="border:1px solid lightgrey; background: black">
+    Your browser does not support the HTML5 canvas tag.
+</canvas>
+<textarea id="levelAscii" ></textarea>
+    <script src="/scripts/levels.js"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,23 @@
+img {
+  background-color: black;
+  vertical-align: middle;
+
+  padding: 0.5em;
+}
+
+.image-bar {
+  height: 6em;
+  background-color: black;
+}
+
+span {
+  color: white;
+  background-color: black;
+  padding: 0.5em;
+}
+
+textarea {
+  display: block;
+  width: 1200px;
+  height: 1200px;
+}
