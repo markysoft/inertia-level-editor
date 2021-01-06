@@ -5,7 +5,9 @@ let levelChars
 let drawing = false
 let button = 0
 let selectedCharacter = '/'
+let waterLevel = -1
 const scale = 0.5
+let currentLevel = 0
 
 const lookup = {
   spr_bar: document.getElementById('spr_bar'),
@@ -15,6 +17,7 @@ const lookup = {
   spr_goal: document.getElementById('spr_goal'),
   spr_ship: document.getElementById('spr_ship'),
   spr_wall: document.getElementById('spr_wall'),
+  spr_hole: document.getElementById('spr_hole'),
   spr_target: document.getElementById('spr_target')
 }
 
@@ -33,6 +36,8 @@ function characterLookup (argument0) {
   switch (argument0) {
     case ('X'):
       return [0, 'spr_wall']
+    case ('H'):
+      return [0, 'spr_hole']
     case ('B'):
       return [0, 'spr_boost']
     case ('b'):
@@ -42,7 +47,13 @@ function characterLookup (argument0) {
     case ('e'):
       return [180, 'spr_boost_small']
     case ('%'):
-      return [315, 'spr_boost']
+      return [315, 'spr_boost_small']
+    case ('£'):
+      return [135, 'spr_boost_small']
+    case ('$'):
+      return [45, 'spr_boost_small']
+    case ('#'):
+      return [225, 'spr_boost_small']
     case ('M'):
       return [90, 'spr_boost']
     case ('m'):
@@ -68,7 +79,7 @@ function characterLookup (argument0) {
     case ('V'):
       return [270, 'spr_ship']
     case ('^'):
-      return [180, 'spr_ship']
+      return [135, 'spr_ship']
     case ('n'):
       return [90, 'spr_ship']
     case ('<'):
@@ -77,6 +88,10 @@ function characterLookup (argument0) {
       return [315, 'spr_ship']
     case ('T'):
       return [0, 'spr_target']
+    case (')'):
+      return [0, 'spr_curve']
+    case ('('):
+      return [90, 'spr_curve']
       // no case matches
     default:
       return undefined
@@ -90,10 +105,20 @@ function setImageAndRotation (chars) {
 function drawSquare (c, r) {
   context.save()
   context.beginPath()
-  context.rect(c * 32, r * 32, 32, 32)
   context.strokeStyle = '#AAAAAA'
+  context.rect(c * 32, r * 32, 32, 32)
   context.stroke()
   context.restore()
+}
+function drawWater () {
+  if (waterLevel > -1) {
+    context.save()
+    context.strokeStyle = '#6DD0F7'
+    context.fillStyle = '#6DD0F7'
+    context.globalAlpha = 0.3
+    context.fillRect(0, waterLevel * 32, 32 * levelChars[0].length, 32 * (levelChars[0].length - waterLevel))
+    context.restore()
+  }
 }
 
 function drawRotatedImage (c, r, image, angle) {
@@ -106,6 +131,19 @@ function drawRotatedImage (c, r, image, angle) {
 
 function drawImage (c, r, image) {
   context.drawImage(image, (c * 32) - (image.width / 2), (r * 32) - (image.height / 2))
+}
+
+function reverseSlashes (line) {
+  return line.map(c => {
+    switch (c) {
+      case ('/'):
+        return '\\'
+      case ('\\'):
+        return '/'
+      default:
+        return c
+    }
+  })
 }
 
 function drawTile (canvas, event) {
@@ -123,11 +161,24 @@ function drawTile (canvas, event) {
     }
     levelChars[r][c] = ch
     drawLevel()
-    document.getElementById('levelAscii').value = levelChars.join('\n').replaceAll(',', ' ')
+    const text = levelChars.join('\n').replaceAll(',', ' ')
+    const reversed = levelChars.map(reverseSlashes).reverse().join('\n').replaceAll(',', ' ')
+    document.getElementById('levelAscii').value = text + '\n\n REVERSE \n\n' + reversed
   }
 }
 
+function getWaterLevel () {
+  for (let i = 0; i < levelChars.length; i++) {
+    if (levelChars[i].includes('~')) {
+      return i
+    }
+  }
+  return -1
+}
+
 function drawLevel () {
+  waterLevel = getWaterLevel()
+  console.log(waterLevel)
   const level = levelChars.map(row => setImageAndRotation(row))
   context.canvas.width = level[0].length * 32 * scale
   context.canvas.height = level.length * 32 * scale
@@ -148,6 +199,8 @@ function drawLevel () {
       }
     }
   }
+
+  drawWater()
 }
 
 function setupCanvas () {
@@ -169,7 +222,7 @@ function setupCanvas () {
 }
 
 function fetchLevel () {
-  fetch('/level')
+  fetch(`/level/${currentLevel}`)
     .then(res => res.json())
     .then((out) => {
       levelChars = out
@@ -178,7 +231,17 @@ function fetchLevel () {
     .catch(err => { throw err })
 }
 
+function addSelectChange () {
+  const levelSelect = document.getElementById('levels')
+  currentLevel = levelSelect.value
+  levelSelect.addEventListener('change', event => {
+    currentLevel = event.target.value
+    fetchLevel()
+  })
+}
+
 function init () {
+  addSelectChange()
   setupCanvas()
   fetchLevel()
   addClicks()

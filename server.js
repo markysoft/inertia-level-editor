@@ -17,9 +17,13 @@ app.use(bodyParser.json())
 app.get('/', function (req, res) {
   res.sendFile(path.join(publicDir, 'index.html'))
 })
+
 app.get('/level', function (req, res) {
-  res.json(
-    parseLevels())
+  res.json(parseLevels(0))
+})
+
+app.get('/level/:levelNo', function (req, res) {
+  res.json(parseLevels(Number(req.params.levelNo)))
 })
 
 const server = http.createServer(app)
